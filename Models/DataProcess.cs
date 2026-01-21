@@ -11,7 +11,7 @@ namespace PhysicProject.Models
 {
     internal class DataProcess
     {
-  
+   
 
         public void Calculate(Params param1)
         {

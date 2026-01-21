@@ -130,7 +130,8 @@ namespace PhysicProject
 
 
                 {
-
+                    ImGui.TextWrapped("Time: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                    ImGui.Separator();
                     if (ImGui.Button("Spring"))
                     {
                         _mainWindow = false;
@@ -167,7 +168,7 @@ namespace PhysicProject
                                                     ImGuiWindowFlags.NoCollapse))
 
                         {
-                        if (ImGui.Button("<<"))
+                        if (ImGui.Button("<< ##canc1"))
                         {
                             _mainWindow = true;
                             _showSpringWindow = false;
@@ -319,7 +320,36 @@ namespace PhysicProject
                             {
 
                                 _dataProcess.Graphs(param1);
-                                ImGui.PlotLines("##function_graph", ref param1.Function_data[0], param1.Function_data_l, 0, null, 0f, 100f, new Vector2(550, 250));
+
+
+                                var canvasPos = ImGui.GetCursorScreenPos();
+                                var canvasSize = new Vector2(550, 250); // Размер вашего графика
+
+                    // Рисуем сам график
+                    ImGui.PlotLines("##function_graph", ref param1.Function_data[0], param1.Function_data_l, 0, null, 0f, 100f, canvasSize);
+
+                    // Накладываем сетку поверх или под (зависит от порядка вызова)
+                    var drawList = ImGui.GetWindowDrawList();
+                    uint gridColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 0.3f)); // Серый полупрозрачный
+
+                    // Вертикальные линии
+                    for (int i = 0; i <= 100; i++)
+                    {
+                        float x = canvasPos.X + (canvasSize.X / 100) * i;
+                        drawList.AddLine(new Vector2(x, canvasPos.Y), new Vector2(x, canvasPos.Y + canvasSize.Y), gridColor);
+                    }
+                    // Горизонтальные линии
+                    for (int i = 0; i <= 50; i++)
+                    {
+                        float y = canvasPos.Y + (canvasSize.Y / 50) * i;
+                        drawList.AddLine(new Vector2(canvasPos.X, y), new Vector2(canvasPos.X + canvasSize.X, y), gridColor);
+                    }
+
+
+
+
+
+                    
                             }
                             ImGui.End();
                         
