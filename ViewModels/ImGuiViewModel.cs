@@ -16,8 +16,11 @@ namespace PhysicProject
         private IWindow? _window;
         private GL? _gl;
         private ImGuiController? _controller;
-        private bool _showDemoWindow = false;
-        private bool _showCustomWindow = true;
+
+        private bool _mainWindow = true;
+        private bool _showSpringWindow = false;
+        private bool _showWaveWindow = false;
+        private bool _showOneMoreWindow = false;
         private bool _showGraphWindow = true;
         private bool _showAboutWindow = false;
         private bool _requestAboutWindow = false;
@@ -99,8 +102,8 @@ namespace PhysicProject
 
                 if (ImGui.BeginMenu("Okna"))
                 {
-                    ImGui.Checkbox("Demo okno", ref _showDemoWindow);
-                    ImGui.Checkbox("Kastomnoe okno", ref _showCustomWindow);
+              
+                    ImGui.Checkbox("Kastomnoe okno", ref _showSpringWindow);
                     ImGui.Checkbox("Grafik", ref _showGraphWindow);
                     ImGui.EndMenu();
                 }
@@ -117,176 +120,227 @@ namespace PhysicProject
                 ImGui.EndMainMenuBar();
             }
 
-            // Демо окно ImGui
-            if (_showDemoWindow)
+            if (_mainWindow)
             {
-                ImGui.ShowDemoWindow(ref _showDemoWindow);
-            }
+                ImGui.SetNextWindowPos(new System.Numerics.Vector2(490, 270));
+                ImGui.SetNextWindowSize(new System.Numerics.Vector2(300, 200));
+                if (ImGui.Begin("Chose", ImGuiWindowFlags.NoMove |
+                                         ImGuiWindowFlags.NoResize |
+                                         ImGuiWindowFlags.NoCollapse))
 
-            // Кастомное окно с элементами управления
-            if (_showCustomWindow)
-            {
-                ImGui.SetNextWindowPos(new System.Numerics.Vector2(0, 20));
-                ImGui.SetNextWindowSize(new System.Numerics.Vector2(300, 600));
-                if (ImGui.Begin("Moe okno", ImGuiWindowFlags.NoMove |
-                                            ImGuiWindowFlags.NoResize |
-                                            ImGuiWindowFlags.NoCollapse)) 
-                                                                  
+
                 {
-                    // Текст
-                    ImGui.TextWrapped("Time: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
+                    if (ImGui.Button("Spring"))
+                    {
+                        _mainWindow = false;
+                        _showSpringWindow = true;
+                        _showWaveWindow = false;
+                        _showOneMoreWindow = false;
+                    }
                     ImGui.Separator();
-
-                    ImGui.Text("Macca");
-
-                    double l1 = param1.Mass_m;
-                    ImGui.InputDouble(":Kr ##label1", ref l1);
-                    param1.Mass_m  = l1;
+                    if (ImGui.Button("Wave"))
+                    {
+                        _mainWindow = false;
+                        _showSpringWindow = false;
+                        _showWaveWindow = true;
+                        _showOneMoreWindow = false;
+                    }
                     ImGui.Separator();
-
-                    ImGui.Text("ridigi");
-
-                    double l2 = param1.Rigidity_k;
-                    ImGui.InputDouble("##label2", ref l2);
-                    param1.Rigidity_k = l2;
-                    ImGui.Separator();
-
-                    bool b1 = false;
-                    if (ImGui.Button("= ##butt"))
+                    if (ImGui.Button("OneMore"))
                     {
-                        _dataProcess.Calculate(param1);
-                        b1 = true;
+                        _mainWindow = false;
+                        _showSpringWindow = false;
+                        _showWaveWindow = false;
+                        _showOneMoreWindow = true;
                     }
-                    if(param1.Rigidity_k != 0 && param1.Mass_m != 0 && b1 == true)
-                    {
-                        param1.Bat = true;
-                    }
-                    if (param1.Rigidity_k == 0 || param1.Mass_m == 0)
-                    {
-                        param1.Bat = false;
-                    }
-                    if (param1.Bat)
-                    {
-                        ImGui.Separator();
-
-                        ImGui.Text("Amplitude");
-                        float l3 = param1.Amplitude_A;
-                        ImGui.SliderFloat(":M ##sl1", ref l3, 0.0f, 100.0f);
-                        param1.Amplitude_A = l3;
-                    }
-                 
-
-                    // Кнопки
-                    /* if (ImGui.Button("Knopka 1"))
-                     {
-                         Console.WriteLine("Nazhata knopka 1!");
-                     }
-                     ImGui.SameLine();
-                     if (ImGui.Button("Knopka 2"))
-                     {
-                         Console.WriteLine("Nazhata knopka 2!");
-                     }
-
-                     // Слайдер
-                     ImGui.SliderFloat("Slajder", ref _sliderValue, 0.0f, 100.0f);
-                     ImGui.Text($"Znachenie slajdera: {_sliderValue:F2}");
-
-                     // Текстовое поле
-                     byte[] buffer2 = System.Text.Encoding.UTF8.GetBytes(_textInput);
-                     Array.Resize(ref buffer2, 256);
-                     if (ImGui.InputText("Tekst", buffer2, (uint)buffer2.Length))
-                     {
-                         _textInput = System.Text.Encoding.UTF8.GetString(buffer2).TrimEnd('\0');
-                     }
-
-                     // Чекбокс
-                     ImGui.Checkbox("Vklyuchit' funkciyu", ref _checkboxValue);
-                     if (_checkboxValue)
-                     {
-                         ImGui.TextColored(new Vector4(0, 1, 0, 1), "Funkciya vklyuchena!");
-                     }
-
-                     // Combo box
-                     ImGui.Combo("Vybor opcii", ref _comboSelection, _comboItems, _comboItems.Length);
-                     ImGui.Text($"Vybrano: {_comboItems[_comboSelection]}");
-
-                     // Цветовой редактор
-                     ImGui.ColorEdit3("Cvet", ref _color);
-                     ImGui.Text($"RGB: ({_color.X:F2}, {_color.Y:F2}, {_color.Z:F2})");
-
-                     // Прогресс бар
-                     float progress = _sliderValue / 100.0f;
-                     ImGui.ProgressBar(progress, new Vector2(0, 0), $"{progress * 100:F0}%");
-
-                     // Таблица
-                     if (ImGui.BeginTable("Tablitsa", 3, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg))
-                     {
-                         ImGui.TableSetupColumn("Kolonka 1");
-                         ImGui.TableSetupColumn("Kolonka 2");
-                         ImGui.TableSetupColumn("Kolonka 3");
-                         ImGui.TableHeadersRow();
-
-                         for (int row = 0; row < 5; row++)
-                         {
-                             ImGui.TableNextRow();
-                             ImGui.TableSetColumnIndex(0);
-                             ImGui.Text($"Yachejka {row + 1}-1");
-                             ImGui.TableSetColumnIndex(1);
-                             ImGui.Text($"Yachejka {row + 1}-2");
-                             ImGui.TableSetColumnIndex(2);
-                             ImGui.Text($"Yachejka {row + 1}-3");
-                         }
-
-                         ImGui.EndTable();
-                     }*/
                 }
                 ImGui.End();
+            }
+                    // Кастомное окно с элементами управления
+                    if (_showSpringWindow)
+                    {
+                        ImGui.SetNextWindowPos(new System.Numerics.Vector2(0, 20));
+                        ImGui.SetNextWindowSize(new System.Numerics.Vector2(300, 600));
+                        if (ImGui.Begin("Moe okno", ImGuiWindowFlags.NoMove |
+                                                    ImGuiWindowFlags.NoResize |
+                                                    ImGuiWindowFlags.NoCollapse))
+
+                        {
+                        if (ImGui.Button("<<"))
+                        {
+                            _mainWindow = true;
+                            _showSpringWindow = false;
+                            _showWaveWindow = false;
+                            _showOneMoreWindow = false;
+                        }
+                        ImGui.TextWrapped("Time: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                            ImGui.Separator();
+
+                            ImGui.Text("Macca");
+
+                            double l1 = param1.Mass_m;
+                            ImGui.InputDouble(":Kr ##label1", ref l1);
+                            param1.Mass_m = l1;
+                            ImGui.Separator();
+
+                            ImGui.Text("ridigi");
+
+                            double l2 = param1.Rigidity_k;
+                            ImGui.InputDouble("##label2", ref l2);
+                            param1.Rigidity_k = l2;
+                            ImGui.Separator();
+
+                            bool b1 = false;
+                            if (ImGui.Button("= ##butt"))
+                            {
+                                _dataProcess.Calculate(param1);
+                                b1 = true;
+                            }
+                            if (param1.Rigidity_k != 0 && param1.Mass_m != 0 && b1 == true)
+                            {
+                                param1.Bat = true;
+                            }
+                            if (param1.Rigidity_k == 0 || param1.Mass_m == 0)
+                            {
+                                param1.Bat = false;
+                            }
+                            if (param1.Bat)
+                            {
+                                ImGui.Separator();
+
+                                ImGui.Text("Amplitude");
+                                float l3 = param1.Amplitude_A;
+                                ImGui.SliderFloat(":M ##sl1", ref l3, 0.0f, 100.0f);
+                                param1.Amplitude_A = l3;
+                            }
+
+
+                            // Кнопки
+                            /* if (ImGui.Button("Knopka 1"))
+                             {
+                                 Console.WriteLine("Nazhata knopka 1!");
+                             }
+                             ImGui.SameLine();
+                             if (ImGui.Button("Knopka 2"))
+                             {
+                                 Console.WriteLine("Nazhata knopka 2!");
+                             }
+
+                             // Слайдер
+                             ImGui.SliderFloat("Slajder", ref _sliderValue, 0.0f, 100.0f);
+                             ImGui.Text($"Znachenie slajdera: {_sliderValue:F2}");
+
+                             // Текстовое поле
+                             byte[] buffer2 = System.Text.Encoding.UTF8.GetBytes(_textInput);
+                             Array.Resize(ref buffer2, 256);
+                             if (ImGui.InputText("Tekst", buffer2, (uint)buffer2.Length))
+                             {
+                                 _textInput = System.Text.Encoding.UTF8.GetString(buffer2).TrimEnd('\0');
+                             }
+
+                             // Чекбокс
+                             ImGui.Checkbox("Vklyuchit' funkciyu", ref _checkboxValue);
+                             if (_checkboxValue)
+                             {
+                                 ImGui.TextColored(new Vector4(0, 1, 0, 1), "Funkciya vklyuchena!");
+                             }
+
+                             // Combo box
+                             ImGui.Combo("Vybor opcii", ref _comboSelection, _comboItems, _comboItems.Length);
+                             ImGui.Text($"Vybrano: {_comboItems[_comboSelection]}");
+
+                             // Цветовой редактор
+                             ImGui.ColorEdit3("Cvet", ref _color);
+                             ImGui.Text($"RGB: ({_color.X:F2}, {_color.Y:F2}, {_color.Z:F2})");
+
+                             // Прогресс бар
+                             float progress = _sliderValue / 100.0f;
+                             ImGui.ProgressBar(progress, new Vector2(0, 0), $"{progress * 100:F0}%");
+
+                             // Таблица
+                             if (ImGui.BeginTable("Tablitsa", 3, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg))
+                             {
+                                 ImGui.TableSetupColumn("Kolonka 1");
+                                 ImGui.TableSetupColumn("Kolonka 2");
+                                 ImGui.TableSetupColumn("Kolonka 3");
+                                 ImGui.TableHeadersRow();
+
+                                 for (int row = 0; row < 5; row++)
+                                 {
+                                     ImGui.TableNextRow();
+                                     ImGui.TableSetColumnIndex(0);
+                                     ImGui.Text($"Yachejka {row + 1}-1");
+                                     ImGui.TableSetColumnIndex(1);
+                                     ImGui.Text($"Yachejka {row + 1}-2");
+                                     ImGui.TableSetColumnIndex(2);
+                                     ImGui.Text($"Yachejka {row + 1}-3");
+                                 }
+
+                                 ImGui.EndTable();
+                             }*/
+                        }
+                        ImGui.End();
+
+
+
+                        ImGui.SetNextWindowPos(new System.Numerics.Vector2(300, 20));
+                        ImGui.SetNextWindowSize(new System.Numerics.Vector2(600, 300));
+                        if (ImGui.Begin("poluchenie dannie", ImGuiWindowFlags.NoMove |
+                                                                     ImGuiWindowFlags.NoResize |
+                                                                     ImGuiWindowFlags.NoCollapse))
+                        {
+                            if (ImGui.BeginTable("", 3, ImGuiTableFlags.Borders |
+                                                        ImGuiTableFlags.RowBg))
+                            {
+                                ImGui.TableSetupColumn("period");
+                                ImGui.TableSetupColumn("chastota");
+                                ImGui.TableSetupColumn("ciklichescaia chastota");
+                                ImGui.TableHeadersRow();
+
+                                ImGui.TableNextRow();
+                                ImGui.TableSetColumnIndex(0);
+                                ImGui.Text($"{param1.Period_T} c");
+                                ImGui.TableSetColumnIndex(1);
+                                ImGui.Text($"{param1.Frequency_v} 1/c");
+                                ImGui.TableSetColumnIndex(2);
+                                ImGui.Text($"{param1.C_frequency_w} pad/c");
+
+                                ImGui.EndTable();
+                            }
+                        }
+                        ImGui.End();
+                    
+                    ImGui.SetNextWindowPos(new System.Numerics.Vector2(300, 320));
+                            ImGui.SetNextWindowSize(new System.Numerics.Vector2(600, 300));
+                            if (ImGui.Begin("Grafiki", ImGuiWindowFlags.NoMove |
+                                                       ImGuiWindowFlags.NoResize |
+                                                       ImGuiWindowFlags.NoCollapse))
+                            {
+
+                                _dataProcess.Graphs(param1);
+                                ImGui.PlotLines("##function_graph", ref param1.Function_data[0], param1.Function_data_l, 0, null, 0f, 100f, new Vector2(550, 250));
+                            }
+                            ImGui.End();
+                        
+                    }//конец пружинный маятник
+            if (_showWaveWindow)
+            {
+
+            }
+            if (_showOneMoreWindow)
+            {
+
+            }
+
+
+
+
+
+
 
                 
-            }
-            ImGui.SetNextWindowPos(new System.Numerics.Vector2(300, 20));
-            ImGui.SetNextWindowSize(new System.Numerics.Vector2(600, 300));
-            if (ImGui.Begin("poluchenie dannie", ImGuiWindowFlags.NoMove |
-                                                         ImGuiWindowFlags.NoResize |
-                                                         ImGuiWindowFlags.NoCollapse))
-            {
-                if (ImGui.BeginTable("", 3, ImGuiTableFlags.Borders |
-                                            ImGuiTableFlags.RowBg))
-                {
-                    ImGui.TableSetupColumn("period");
-                    ImGui.TableSetupColumn("chastota");
-                    ImGui.TableSetupColumn("ciklichescaia chastota");
-                    ImGui.TableHeadersRow();
-
-                    ImGui.TableNextRow();
-                    ImGui.TableSetColumnIndex(0);
-                    ImGui.Text($"{param1.Period_T} c");
-                    ImGui.TableSetColumnIndex(1);
-                    ImGui.Text($"{param1.Frequency_v} 1/c");
-                    ImGui.TableSetColumnIndex(2);
-                    ImGui.Text($"{param1.C_frequency_w} pad/c");
-                    
-                    ImGui.EndTable();
-                }
-            }
-            ImGui.End();
-
-
-            // Окно с графиком
-            if (_showGraphWindow)
-            {
-                ImGui.SetNextWindowPos(new System.Numerics.Vector2(300, 320));
-                ImGui.SetNextWindowSize(new System.Numerics.Vector2(600, 300));
-                if (ImGui.Begin("Grafiki", ImGuiWindowFlags.NoMove |
-                                           ImGuiWindowFlags.NoResize |
-                                           ImGuiWindowFlags.NoCollapse))
-                {
-                    
-                    _dataProcess.Graphs(param1);
-                   ImGui.PlotLines("##function_graph", ref param1.Function_data[0], param1.Function_data_l, 0, null, 0f, 100f, new Vector2(550, 250));
-                }
-                ImGui.End();
-            }
+            
 
             // Окно "О программе"
             if (_requestAboutWindow)
