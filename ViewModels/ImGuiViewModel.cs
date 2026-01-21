@@ -17,6 +17,8 @@ namespace PhysicProject
         private GL? _gl;
         private ImGuiController? _controller;
 
+        private bool _vanyLox = true;
+
         private bool _mainWindow = true;
         private bool _showSpringWindow = false;
         private bool _showWaveWindow = false;
