@@ -15,7 +15,7 @@ namespace PhysicProject.Models
         public double Frequency_v { get; set; }
         public double C_frequency_w { get; set; }
         public float Amplitude_A { get; set; }
-        public float[] Function_data { get; set; }
+        public float[] Function_data { get; set; } = new float[50];
         public int Function_data_l { get; set; }
         public bool Bat { get; set; } = false;   
 
