@@ -17,7 +17,16 @@ namespace PhysicProject.Models
         public float Amplitude_A { get; set; }
         public float[] Function_data { get; set; } = new float[50];
         public int Function_data_l { get; set; }
-        public bool Bat { get; set; } = false;   
+        public bool Bat { get; set; } = false;
+
+        //Wave
+        public int N { get; set; } = 200;
+        public float h { get; set; } = 0.01f;
+        public float tau { get; set; } = 13f;
+        public float beta { get; set; } = 3f;
+        public float[] U { get; set; } = new float[200];
+        public float[] U_prev { get; set; } = new float[200];
+        public float[] U_next { get; set; } = new float[200];
 
 
 

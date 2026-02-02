@@ -347,7 +347,7 @@ namespace PhysicProject
                         drawList.AddLine(new Vector2(canvasPos.X, y), new Vector2(canvasPos.X + canvasSize.X, y), gridColor);
                     }
 
-
+                    
 
 
 
@@ -358,7 +358,77 @@ namespace PhysicProject
                     }//конец пружинный маятник
             if (_showWaveWindow)
             {
+                ImGui.SetNextWindowPos(new System.Numerics.Vector2(0, 20));
+                ImGui.SetNextWindowSize(new System.Numerics.Vector2(300, 600));
+                if (ImGui.Begin("Moe okno", ImGuiWindowFlags.NoMove |
+                                            ImGuiWindowFlags.NoResize |
+                                            ImGuiWindowFlags.NoCollapse))
 
+                {
+                    if (ImGui.Button("<< ##canc1"))
+                    {
+                        _mainWindow = true;
+                        _showSpringWindow = false;
+                        _showWaveWindow = false;
+                        _showOneMoreWindow = false;
+                    }
+                    ImGui.Separator();
+
+                    ImGui.Text("tau");
+                    float l2 = param1.tau;
+                    ImGui.SliderFloat(":ms ##sl1", ref l2, 0.0f, 13f);
+                    param1.tau = l2;
+
+                    bool calc = false;
+                    if (ImGui.Button("Calculate"))
+                    {
+                        calc = true;
+                    }
+
+                    if (calc)
+                    {
+                        DataProcess.Solve(param1);
+                        calc = false;
+                    }
+
+
+                    ImGui.End();
+
+
+                    ImGui.SetNextWindowPos(new System.Numerics.Vector2(300, 320));
+                    ImGui.SetNextWindowSize(new System.Numerics.Vector2(600, 300));
+                    if (ImGui.Begin("Grafik", ImGuiWindowFlags.NoMove |
+                                               ImGuiWindowFlags.NoResize |
+                                               ImGuiWindowFlags.NoCollapse))
+                    {
+                        DataProcess.GraphWave(param1);
+
+                        var canvasPos = ImGui.GetCursorScreenPos();
+                        var canvasSize = new Vector2(550, 250); // Размер вашего графика
+
+                        //Рисуем сам график
+                        ImGui.PlotLines("##function_graph", ref param1.U[0], param1.N, 0, null, 0f, 100f, canvasSize);
+
+                        // Накладываем сетку поверх или под (зависит от порядка вызова)
+                        var drawList = ImGui.GetWindowDrawList();
+                        uint gridColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 0.3f)); // Серый полупрозрачный
+
+                        // Вертикальные линии
+                        for (int i = 0; i <= 100; i++)
+                        {
+                            float x = canvasPos.X + (canvasSize.X / 100) * i;
+                            drawList.AddLine(new Vector2(x, canvasPos.Y), new Vector2(x, canvasPos.Y + canvasSize.Y), gridColor);
+                        }
+                        // Горизонтальные линии
+                        for (int i = 0; i <= 50; i++)
+                        {
+                            float y = canvasPos.Y + (canvasSize.Y / 50) * i;
+                            drawList.AddLine(new Vector2(canvasPos.X, y), new Vector2(canvasPos.X + canvasSize.X, y), gridColor);
+                        }
+
+                    }
+                }
+                ImGui.End();
             }
             if (_showOneMoreWindow)
             {
